@@ -41,7 +41,7 @@ export default function SessionHistory() {
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       
-      {/* ✅ FIXED HEADING COLOR */}
+      
       <h2 style={{ color: '#fff', marginBottom: '20px' }}>
         Your writing sessions
       </h2>
