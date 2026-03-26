@@ -4,6 +4,8 @@ import { usePasteDetect } from '../hooks/usePasteDetect'
 import { saveSession } from '../api/session'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+// 1. Import the new component (Create this file in your components folder)
+import ForensicPanel from '../components/ForensicPanel' 
 
 const Editor: React.FC = () => {
   const navigate = useNavigate()
@@ -15,8 +17,16 @@ const Editor: React.FC = () => {
   const { handleKeyDown, getKeystrokeData, reset: resetKeys } = useKeystroke()
   const { handlePaste, getPasteData, reset: resetPaste } = usePasteDetect()
 
+  // 2. Extract live data for the Forensic Panel
+  const { avgPause } = getKeystrokeData()
+  const { pasteCount } = getPasteData()
+  
   const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length
   const charCount = text.length
+
+  // Calculate live WPM
+  const minutesElapsed = (new Date().getTime() - startTime.current.getTime()) / 60000
+  const currentWpm = minutesElapsed > 0 ? Math.round(wordCount / minutesElapsed) : 0
 
   const handleEndSession = useCallback(async () => {
     if (!user || text.trim() === '') return
@@ -57,43 +67,57 @@ const Editor: React.FC = () => {
         <div style={s.right}>
           <span style={s.username}>Hi, {user?.username}</span>
           <button style={s.logoutBtn} onClick={logout}>Logout</button>
-          <button onClick={() => navigate('/sessions')}>My sessions</button>
+          <button style={s.sessionBtn} onClick={() => navigate('/sessions')}>My sessions</button>
         </div>
       </header>
 
-      <main style={s.main}>
-        {status === 'saved' && <div style={s.banner}>Session saved successfully!</div>}
-        {status === 'error' && <div style={{ ...s.banner, ...s.bannerErr }}>Failed to save. Try again.</div>}
+      {/* 3. Wrap main content to allow the Side Panel to sit next to the Textarea */}
+      <main style={s.mainContainer}>
+        <div style={s.editorWrapper}>
+          {status === 'saved' && <div style={s.banner}>Session saved successfully!</div>}
+          {status === 'error' && <div style={{ ...s.banner, ...s.bannerErr }}>Failed to save. Try again.</div>}
 
-        <textarea
-          style={s.textarea}
-          value={text}
-          onChange={e => setText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onPaste={handlePaste}
-          placeholder="Start writing here. Your session is being monitored silently..."
-          spellCheck
-        />
-
-        <div style={s.footer}>
-          <div style={s.stats}>
-            <span style={s.stat}>{wordCount} words</span>
-            <span style={s.dot}>·</span>
-            <span style={s.stat}>{charCount} characters</span>
+          <div style={{ display: 'flex', gap: '20px', flex: 1 }}>
+            <textarea
+              style={s.textarea}
+              value={text}
+              onChange={e => setText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
+              placeholder="Start writing here. Your session is being monitored silently..."
+              spellCheck
+            />
+            
+            {/* 4. THE NEW FEATURE COMPONENT */}
+            <ForensicPanel 
+              wpm={currentWpm}
+              pasteCount={pasteCount}
+              avgPause={avgPause}
+              isPasting={false} // You can link this to a state if handlePaste triggers one
+            />
           </div>
-          <button
-            style={{ ...s.endBtn, opacity: text.trim() === '' || status === 'saving' ? 0.4 : 1 }}
-            onClick={handleEndSession}
-            disabled={text.trim() === '' || status === 'saving'}
-          >
-            {status === 'saving' ? 'Saving...' : 'End session'}
-          </button>
+
+          <div style={s.footer}>
+            <div style={s.stats}>
+              <span style={s.stat}>{wordCount} words</span>
+              <span style={s.dot}>·</span>
+              <span style={s.stat}>{charCount} characters</span>
+            </div>
+            <button
+              style={{ ...s.endBtn, opacity: text.trim() === '' || status === 'saving' ? 0.4 : 1 }}
+              onClick={handleEndSession}
+              disabled={text.trim() === '' || status === 'saving'}
+            >
+              {status === 'saving' ? 'Saving...' : 'End session'}
+            </button>
+          </div>
         </div>
       </main>
     </div>
   )
 }
 
+// 5. Updated Styles
 const s: Record<string, React.CSSProperties> = {
   page: { minHeight: '100vh', background: '#0f0f0f', display: 'flex', flexDirection: 'column' },
   header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 32px', borderBottom: '1px solid #1a1a1a' },
@@ -101,7 +125,9 @@ const s: Record<string, React.CSSProperties> = {
   right: { display: 'flex', alignItems: 'center', gap: 16 },
   username: { color: '#555', fontSize: 13 },
   logoutBtn: { background: 'transparent', border: '1px solid #222', color: '#666', borderRadius: 6, padding: '5px 13px', fontSize: 12, cursor: 'pointer' },
-  main: { flex: 1, display: 'flex', flexDirection: 'column', maxWidth: 820, width: '100%', margin: '0 auto', padding: '36px 24px', gap: 14 },
+  sessionBtn: { background: '#222', color: '#eee', border: 'none', borderRadius: 6, padding: '6px 14px', fontSize: 12, cursor: 'pointer' },
+  mainContainer: { flex: 1, display: 'flex', justifyContent: 'center', padding: '36px 24px' },
+  editorWrapper: { maxWidth: 1100, width: '100%', display: 'flex', flexDirection: 'column', gap: 14 },
   banner: { background: '#0d2818', border: '1px solid #14532d', color: '#86efac', borderRadius: 8, padding: '10px 16px', fontSize: 13 },
   bannerErr: { background: '#1f0d0d', border: '1px solid #3f1515', color: '#f87171' },
   textarea: { flex: 1, minHeight: 520, background: '#111', border: '1px solid #1e1e1e', borderRadius: 10, padding: '28px 32px', color: '#d4d4d4', fontSize: 16, lineHeight: 1.85, resize: 'none', outline: 'none', fontFamily: 'Georgia, serif' },
