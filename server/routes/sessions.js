@@ -3,17 +3,19 @@ const router = express.Router();
 const Session = require('../models/Session');
 const { protect } = require('../middleware/authMiddleware');
 
-// 1. SAVE SESSION
 router.post('/save', protect, async (req, res) => {
   const {
+    text, 
     wordCount, charCount, duration,
     keystrokeTimings, avgPause,
     pasteEvents, pasteCount,
     startTime, endTime,
   } = req.body;
+
   try {
     const session = await Session.create({
       userId: req.user._id,
+      text,
       wordCount, charCount, duration,
       keystrokeTimings, avgPause,
       pasteEvents, pasteCount,
@@ -25,7 +27,6 @@ router.post('/save', protect, async (req, res) => {
   }
 });
 
-// 2. GET ALL MY SESSIONS
 router.get('/my', protect, async (req, res) => {
   try {
     const sessions = await Session.find({ userId: req.user._id }).sort({ createdAt: -1 });
@@ -35,9 +36,20 @@ router.get('/my', protect, async (req, res) => {
   }
 });
 
-// --- DELETE ROUTES (Order is critical here) ---
+router.get('/:id', protect, async (req, res) => {
+  try {
+    const session = await Session.findOne({ _id: req.params.id, userId: req.user._id });
+    
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+    
+    res.json(session);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-// 3. DELETE ALL SESSIONS (Must be ABOVE /:id)
 router.delete('/clear-all', protect, async (req, res) => {
   try {
     const result = await Session.deleteMany({ userId: req.user._id });
@@ -47,7 +59,6 @@ router.delete('/clear-all', protect, async (req, res) => {
   }
 });
 
-// 4. DELETE SINGLE SESSION
 router.delete('/:id', protect, async (req, res) => {
   try {
     const session = await Session.findOne({ _id: req.params.id, userId: req.user._id });

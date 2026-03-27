@@ -4,7 +4,6 @@ import { usePasteDetect } from '../hooks/usePasteDetect'
 import { saveSession } from '../api/session'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
-// 1. Import the new component (Create this file in your components folder)
 import ForensicPanel from '../components/ForensicPanel' 
 
 const Editor: React.FC = () => {
@@ -12,21 +11,32 @@ const Editor: React.FC = () => {
   const { user, logout } = useAuth()
   const [text, setText] = useState('')
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [showAnalysis, setShowAnalysis] = useState(false) 
   const startTime = useRef<Date>(new Date())
 
   const { handleKeyDown, getKeystrokeData, reset: resetKeys } = useKeystroke()
   const { handlePaste, getPasteData, reset: resetPaste } = usePasteDetect()
 
-  // 2. Extract live data for the Forensic Panel
   const { avgPause } = getKeystrokeData()
-  const { pasteCount } = getPasteData()
+  const { pasteCount, pasteEvents } = getPasteData()
   
   const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length
   const charCount = text.length
 
-  // Calculate live WPM
   const minutesElapsed = (new Date().getTime() - startTime.current.getTime()) / 60000
   const currentWpm = minutesElapsed > 0 ? Math.round(wordCount / minutesElapsed) : 0
+
+  const handleCheckAnalysis = () => {
+    if (wordCount > 0) setShowAnalysis(true);
+  }
+
+  const totalPastedChars = pasteEvents?.reduce((sum, p) => sum + p.charsAdded, 0) || 0;
+  const pasteRatio = charCount > 0 ? totalPastedChars / charCount : 0;
+  
+  let liveScore = 100 * (1 - pasteRatio);
+  if (currentWpm > 140) liveScore -= Math.min(20, (currentWpm - 140) / 2);
+  if (pasteCount > 1) liveScore -= (pasteCount - 1) * 2;
+  liveScore = Math.max(0, Math.round(liveScore));
 
   const handleEndSession = useCallback(async () => {
     if (!user || text.trim() === '') return
@@ -37,6 +47,7 @@ const Editor: React.FC = () => {
 
     try {
       await saveSession({
+        text, 
         wordCount,
         charCount,
         duration: endTime.getTime() - startTime.current.getTime(),
@@ -52,6 +63,7 @@ const Editor: React.FC = () => {
       resetKeys()
       resetPaste()
       setText('')
+      setShowAnalysis(false)
       startTime.current = new Date()
       setTimeout(() => setStatus('idle'), 3000)
     } catch {
@@ -71,7 +83,6 @@ const Editor: React.FC = () => {
         </div>
       </header>
 
-      {/* 3. Wrap main content to allow the Side Panel to sit next to the Textarea */}
       <main style={s.mainContainer}>
         <div style={s.editorWrapper}>
           {status === 'saved' && <div style={s.banner}>Session saved successfully!</div>}
@@ -81,19 +92,23 @@ const Editor: React.FC = () => {
             <textarea
               style={s.textarea}
               value={text}
-              onChange={e => setText(e.target.value)}
+              onChange={e => {
+                setText(e.target.value);
+                if(showAnalysis) setShowAnalysis(false); 
+              }}
               onKeyDown={handleKeyDown}
               onPaste={handlePaste}
               placeholder="Start writing here. Your session is being monitored silently..."
               spellCheck
             />
             
-            {/* 4. THE NEW FEATURE COMPONENT */}
             <ForensicPanel 
               wpm={currentWpm}
               pasteCount={pasteCount}
               avgPause={avgPause}
-              isPasting={false} // You can link this to a state if handlePaste triggers one
+              isPasting={false}
+              isVisible={showAnalysis && wordCount > 0}
+              customScore={liveScore} 
             />
           </div>
 
@@ -103,13 +118,24 @@ const Editor: React.FC = () => {
               <span style={s.dot}>·</span>
               <span style={s.stat}>{charCount} characters</span>
             </div>
-            <button
-              style={{ ...s.endBtn, opacity: text.trim() === '' || status === 'saving' ? 0.4 : 1 }}
-              onClick={handleEndSession}
-              disabled={text.trim() === '' || status === 'saving'}
-            >
-              {status === 'saving' ? 'Saving...' : 'End session'}
-            </button>
+            
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button 
+                style={s.checkBtn} 
+                onClick={handleCheckAnalysis}
+                disabled={wordCount === 0}
+              >
+                CHECK AUTHENTICITY
+              </button>
+              
+              <button
+                style={{ ...s.endBtn, opacity: text.trim() === '' || status === 'saving' ? 0.4 : 1 }}
+                onClick={handleEndSession}
+                disabled={text.trim() === '' || status === 'saving'}
+              >
+                {status === 'saving' ? 'Saving...' : 'End session'}
+              </button>
+            </div>
           </div>
         </div>
       </main>
@@ -117,7 +143,6 @@ const Editor: React.FC = () => {
   )
 }
 
-// 5. Updated Styles
 const s: Record<string, React.CSSProperties> = {
   page: { minHeight: '100vh', background: '#0f0f0f', display: 'flex', flexDirection: 'column' },
   header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 32px', borderBottom: '1px solid #1a1a1a' },
@@ -135,6 +160,7 @@ const s: Record<string, React.CSSProperties> = {
   stats: { display: 'flex', gap: 8, alignItems: 'center' },
   stat: { color: '#444', fontSize: 13 },
   dot: { color: '#333', fontSize: 13 },
+  checkBtn: { background: 'transparent', color: '#7c3aed', border: '1px solid #7c3aed', borderRadius: 8, padding: '9px 18px', fontSize: 13, cursor: 'pointer' },
   endBtn: { background: '#7c3aed', color: '#fff', border: 'none', borderRadius: 8, padding: '9px 22px', fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'opacity .2s' },
 }
 

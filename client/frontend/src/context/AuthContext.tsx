@@ -18,7 +18,6 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType)
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
 
-  // 🔥 Load user from localStorage on app start
   useEffect(() => {
     const storedUser = localStorage.getItem('vi_user')
     if (storedUser) {
@@ -29,7 +28,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = (userData: User) => {
     setUser(userData)
 
-    // ✅ Store BOTH user and token
     localStorage.setItem('vi_user', JSON.stringify(userData))
     localStorage.setItem('token', userData.token)
   }
@@ -37,7 +35,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     setUser(null)
 
-    // ✅ Clear everything
     localStorage.removeItem('vi_user')
     localStorage.removeItem('token')
   }

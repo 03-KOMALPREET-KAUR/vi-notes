@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './components/Login'
 import Editor from './components/Editor'
 import SessionHistory from './pages/SessionHistory'
+import SessionDetails from './pages/SessionDetails'
 
 const AppContent: React.FC = () => {
   const { user } = useAuth()
@@ -17,6 +18,7 @@ const AppContent: React.FC = () => {
         <>
           <Route path="/" element={<Editor />} />
           <Route path="/sessions" element={<SessionHistory />} />
+          <Route path="/sessions/:id" element={<SessionDetails />} />
         </>
       )}
     </Routes>
