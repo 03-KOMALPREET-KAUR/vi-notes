@@ -74,7 +74,7 @@ const s: Record<string, React.CSSProperties> = {
   heading: { color: '#e5e5e5', fontSize: 17, fontWeight: 500, marginBottom: 18 },
   error: { background: '#1f1010', border: '1px solid #3f1515', color: '#f87171', borderRadius: 8, padding: '10px 14px', fontSize: 13, marginBottom: 14 },
   form: { display: 'flex', flexDirection: 'column', gap: 11 },
-  input: { background: '#0f0f0f', border: '1px solid #2a2a2a', borderRadius: 8, padding: '11px 14px', color: '#e5e5e5', fontSize: 14, outline: 'none', transition: 'border-color .2s' },
+  input: { width: '100%',background: '#0f0f0f', border: '1px solid #2a2a2a', borderRadius: 8, padding: '11px 14px', color: '#e5e5e5', fontSize: 14, outline: 'none', transition: 'border-color .2s' },
   btn: { background: '#7c3aed', color: '#fff', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 500, cursor: 'pointer', marginTop: 6 },
   switchText: { color: '#555', fontSize: 13, textAlign: 'center', marginTop: 22 },
   switchLink: { color: '#a78bfa', cursor: 'pointer' },
