@@ -45,7 +45,7 @@ const SessionDetails: React.FC = () => {
   }, [id]);
 
 const calculateScore = () => {
-  if (!session || session.charCount === 0) return 100;
+  if (!session || session.charCount === 0) return 0;
 
   const totalPastedChars = session.pasteEvents?.reduce((sum, p) => sum + p.charsAdded, 0) || 0;
   const pasteRatio = totalPastedChars / session.charCount;

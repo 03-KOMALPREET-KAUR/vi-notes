@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react' 
+import { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom"
 
 interface PasteEvent {
@@ -140,7 +140,7 @@ const sh: Record<string, React.CSSProperties> = {
   
   cardTop: { display: 'flex', justifyContent: 'space-between', marginBottom: '12px' },
   date: { fontSize: '11px', color: '#444', fontWeight: 800, letterSpacing: '1px' },
-  delBtn: { background: 'transparent', border: 'none', color: '#333', fontSize: '18px', cursor: 'pointer' },
+  delBtn: { background: 'transparent', border: 'none', color: '#f1e8e8', fontSize: '18px', cursor: 'pointer' },
   statsRow: { display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' },
   statBadge: { fontSize: '10px', fontWeight: 800, border: '1px solid #222', padding: '4px 10px', borderRadius: '6px', color: '#777', textTransform: 'uppercase' },
   
