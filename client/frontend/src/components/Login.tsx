@@ -32,17 +32,25 @@ const Login: React.FC = () => {
       <div style={s.card}>
         <h1 style={s.logo}>Vi-Notes</h1>
         <p style={s.tagline}>Authenticity verification for human writing</p>
-        <h2 style={s.heading}>{isRegister ? 'Create account' : 'Sign in'}</h2>
         {error && <div style={s.error}>{error}</div>}
         <form onSubmit={handleSubmit} style={s.form}>
           {isRegister && (
-            <input style={s.input} name="username" placeholder="Username"
+            <div>
+              <label style={s.label}>Username</label>
+              <input style={s.input} name="username" placeholder="Username"
               value={form.username} onChange={handleChange} required />
+            </div>
           )}
-          <input style={s.input} name="email" type="email" placeholder="Email"
+          <div>
+            <label style={s.label}>Email</label>
+            <input style={s.input} name="email" type="email" placeholder="Email"
             value={form.email} onChange={handleChange} required />
-          <input style={s.input} name="password" type="password" placeholder="Password"
-            value={form.password} onChange={handleChange} required />
+          </div>
+          <div>
+            <label style={s.label}>Password</label>
+            <input style={s.input} name="password" type="password" placeholder="Password"
+              value={form.password} onChange={handleChange} required />
+          </div>
           <button type="submit" style={s.btn} disabled={loading}>
             {loading ? 'Please wait...' : isRegister ? 'Register' : 'Login'}
           </button>
@@ -70,6 +78,8 @@ const s: Record<string, React.CSSProperties> = {
   btn: { background: '#7c3aed', color: '#fff', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 500, cursor: 'pointer', marginTop: 6 },
   switchText: { color: '#555', fontSize: 13, textAlign: 'center', marginTop: 22 },
   switchLink: { color: '#a78bfa', cursor: 'pointer' },
+  label: {display: 'block', marginBottom: '4px', color: '#f0e7e7',fontSize: '12px'
+}
 }
 
 export default Login
