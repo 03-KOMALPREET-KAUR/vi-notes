@@ -49,16 +49,7 @@ const ForensicPanel: React.FC<ForensicPanelProps> = ({
 }
 
 const fp: Record<string, React.CSSProperties> = {
-  container: { 
-    width: 280, 
-    background: '#111', 
-    borderLeft: '1px solid #1a1a1a', 
-    padding: '30px', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    gap: '35px',
-    fontFamily: 'Inter, system-ui, sans-serif'
-  },
+  container: { width: 280, background: '#111', borderLeft: '1px solid #1a1a1a', padding: '30px', display: 'flex', flexDirection: 'column', gap: '35px',fontFamily: 'Inter, system-ui, sans-serif'},
   label: { fontSize: '11px', color: '#555', fontWeight: 800, letterSpacing: '1.5px' },
   section: { display: 'flex', flexDirection: 'column', gap: '8px' },
   subLabel: { fontSize: '9px', color: '#444', fontWeight: 700, letterSpacing: '0.5px' },
