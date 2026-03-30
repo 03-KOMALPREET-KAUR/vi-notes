@@ -1,0 +1,74 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root[data-theme="dark"] {
+  --bg-page:        #0f0f0f;
+  --bg-card:        #161616;
+  --bg-input:       #0f0f0f;
+  --bg-hover:       #1e1e1e;
+  --border:         #222222;
+  --border-hover:   #333333;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --border-accent: #1e1e1e;
+  --text-primary:   #e5e5e5;
+  --text-secondary: #888888;
+  --text-muted:     #444444;
+  --accent:         #7c3aed;
+  --accent-hover:   #6d28d9;
+  --accent-text:    #ffffff;
+  --success-bg:     #0d2818;
+  --success-border: #14532d;
+  --success-text:   #86efac;
+  --error-bg:       #1f0d0d;
+  --error-border:   #3f1515;
+  --error-text:     #f87171;
+  --toggle-bg:      #222222;
+  --textarea-text:  #d4d4d4;
+  --shadow:         0 4px 24px rgba(0,0,0,0.4);
+}
+
+:root[data-theme="light"] {
+  --bg-page:        #f5f4f0;
+  --bg-card:        #ffffff;
+  --bg-input:       #fafaf8;
+  --bg-hover:       #f0efe9;
+  --border:         #e2e0d8;
+  --border-hover:   #ccc9be;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --border-accent: #e8e6de;
+  --text-primary:   #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-muted:     #b0aea6;
+  --accent:         #7c3aed;
+  --accent-hover:   #6d28d9;
+  --accent-text:    #ffffff;
+  --success-bg:     #f0fdf4;
+  --success-border: #bbf7d0;
+  --success-text:   #166534;
+  --error-bg:       #fef2f2;
+  --error-border:   #fecaca;
+  --error-text:     #dc2626;
+  --toggle-bg:      #e2e0d8;
+  --textarea-text:  #1a1a1a;
+  --shadow:         0 4px 24px rgba(0,0,0,0.08);
+}
+
+textarea {
+  font-family: var(--font-serif) !important;
+  line-height: 1.9 !important;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
