@@ -10,7 +10,9 @@ export const saveSession = async (data: {
   startTime: Date
   endTime: Date
 }, token: string) => {
-  const res = await fetch('http://localhost:5000/api/sessions', {
+  const API = import.meta.env.VITE_API_URL;
+
+  const res = await fetch(`${API}/api/sessions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -18,6 +20,7 @@ export const saveSession = async (data: {
     },
     body: JSON.stringify(data),
   })
+
   if (!res.ok) throw new Error('Failed to save session')
   return res.json()
 }
