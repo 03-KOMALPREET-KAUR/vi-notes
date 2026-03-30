@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ThemeToggle from '../components/ThemeToggle';<div className=""></div>
+import ThemeToggle from '../components/ThemeToggle';
 import { calculateAuthenticityScore, getScoreColor, getScoreBadgeStyle } from '../utils/scoring';
 
 interface PasteEvent {
@@ -19,23 +19,17 @@ interface Session {
   pasteEvents?: PasteEvent[];
 }
 
-const getScore = (s: Session): number => {
-  const totalPastedChars = s.pasteEvents?.reduce((sum, p) => sum + p.charsAdded, 0) || 0;
-  const clampedPasted = Math.min(totalPastedChars, s.charCount);
-  const pasteRatio = s.charCount > 0 ? clampedPasted / s.charCount : 0;
-  let score = 100 * (1 - pasteRatio);
-  if (s.pasteCount > 1) score -= (s.pasteCount - 1) * 2;
-  return Math.min(100, Math.max(0, Math.round(score)));
-};
-
 export default function SessionHistory() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  
+  // Use Environment Variable for API
+  const API = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/sessions/my', {
+    fetch(`${API}/api/sessions/my`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
@@ -44,13 +38,13 @@ export default function SessionHistory() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [token]);
+  }, [token, API]);
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!window.confirm('Permanently delete this forensic record?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/sessions/${id}`, {
+      const res = await fetch(`${API}/api/sessions/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -61,7 +55,7 @@ export default function SessionHistory() {
   const handleClearAll = async () => {
     if (!window.confirm('Permanently wipe ALL forensic history. Proceed?')) return;
     try {
-      const res = await fetch('http://localhost:5000/api/sessions/clear-all', {
+      const res = await fetch(`${API}/api/sessions/clear-all`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -79,8 +73,6 @@ export default function SessionHistory() {
 
   return (
     <div style={sh.page}>
-
-      {/* Header */}
       <header style={sh.header}>
         <div>
           <div style={sh.eyebrow}>FORENSIC RECORD</div>
@@ -98,7 +90,6 @@ export default function SessionHistory() {
         </div>
       </header>
 
-      {/* Session list */}
       {sessions.length === 0 ? (
         <div style={sh.emptyState}>
           <div style={sh.emptyIcon}>◎</div>
@@ -111,14 +102,7 @@ export default function SessionHistory() {
           {sessions.map(s => {
             const score = calculateAuthenticityScore(s);
             const scoreColor = getScoreColor(score);
-            const badge = getScoreBadgeStyle(score);
-
-            const scoreBg = score > 80
-              ? 'var(--success-bg)' : score > 50 ? '#fffbeb' : 'var(--error-bg)';
-            const scoreText = score > 80
-              ? 'var(--success-text)' : score > 50 ? '#92400e' : 'var(--error-text)';
-            const scoreBorder = score > 80
-              ? 'var(--success-border)' : score > 50 ? '#fde68a' : 'var(--error-border)';
+            const badgeStyle = getScoreBadgeStyle(score);
 
             return (
               <div
@@ -126,27 +110,26 @@ export default function SessionHistory() {
                 style={{ ...sh.card, borderLeftColor: scoreColor }}
                 onClick={() => navigate(`/sessions/${s._id}`)}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.borderColor = scoreColor;
-                  (e.currentTarget as HTMLDivElement).style.background = 'var(--bg-hover)';
+                  e.currentTarget.style.borderColor = scoreColor;
+                  e.currentTarget.style.background = 'var(--bg-hover)';
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)';
-                  (e.currentTarget as HTMLDivElement).style.background = 'var(--bg-card)';
-                  (e.currentTarget as HTMLDivElement).style.borderLeftColor = scoreColor;
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                  e.currentTarget.style.background = 'var(--bg-card)';
+                  e.currentTarget.style.borderLeftColor = scoreColor;
                 }}
               >
-                {/* Card top row */}
                 <div style={sh.cardTop}>
                   <div style={sh.badgeRow}>
-                    <span style={{ ...sh.badge, background: scoreBg, color: scoreText, borderColor: scoreBorder }}>
+                    <span style={{ 
+                      ...sh.badge, 
+                      background: badgeStyle.bg, 
+                      color: badgeStyle.text, 
+                      borderColor: badgeStyle.border 
+                    }}>
                       {score}% HUMAN
                     </span>
                     <span style={sh.badge}>{s.wordCount} WORDS</span>
-                    {s.pasteCount > 0 && (
-                      <span style={{ ...sh.badge, background: badge.bg, color: badge.text, borderColor: badge.border }}>
-                        {score}% HUMAN
-                      </span>
-                    )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                     <span style={sh.date}>
@@ -158,20 +141,16 @@ export default function SessionHistory() {
                       style={sh.delBtn}
                       onClick={e => handleDelete(s._id, e)}
                       title="Delete"
-                      onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
-                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
                     >×</button>
                   </div>
                 </div>
 
-                {/* Preview text */}
                 <p style={sh.preview}>
                   {s.text
                     ? s.text.substring(0, 130) + (s.text.length > 130 ? '…' : '')
                     : 'No text content available.'}
                 </p>
 
-                {/* Footer */}
                 <div style={sh.cardFooter}>
                   VIEW FULL ANALYSIS →
                 </div>
@@ -183,6 +162,7 @@ export default function SessionHistory() {
     </div>
   );
 }
+
 
 const sh: Record<string, React.CSSProperties> = {
   page: {

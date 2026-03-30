@@ -35,9 +35,12 @@ const SessionDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [ringAnimated, setRingAnimated] = useState(false);
 
+  
+  const API = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:5000/api/sessions/${id}`, {
+    fetch(`${API}/api/sessions/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
@@ -47,7 +50,7 @@ const SessionDetails: React.FC = () => {
         setTimeout(() => setRingAnimated(true), 120);
       })
       .catch(() => setLoading(false));
-  }, [id]);
+  }, [id, API]);
 
   const generatePDF = () => {
     if (!session) return;
