@@ -5,6 +5,8 @@ interface PasteEvent {
   charsAdded: number
 }
 
+
+
 export const usePasteDetect = () => {
   const pasteEvents = useRef<PasteEvent[]>([])
 
@@ -24,3 +26,4 @@ export const usePasteDetect = () => {
 
   return { handlePaste, getPasteData, reset }
 }
+

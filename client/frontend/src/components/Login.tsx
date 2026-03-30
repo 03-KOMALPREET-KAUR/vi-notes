@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { loginUser, registerUser } from '../api/auth'
 import { useAuth } from '../context/AuthContext'
+import ThemeToggle from './ThemeToggle'
 
 const Login: React.FC = () => {
   const { login } = useAuth()
@@ -29,6 +30,9 @@ const Login: React.FC = () => {
 
   return (
     <div style={s.page}>
+      <div style={s.topBar}>
+        <ThemeToggle />
+      </div>
       <div style={s.card}>
         <h1 style={s.logo}>Vi-Notes</h1>
         <p style={s.tagline}>Authenticity verification for human writing</p>
@@ -49,7 +53,8 @@ const Login: React.FC = () => {
         </form>
         <p style={s.switchText}>
           {isRegister ? 'Already have an account? ' : "Don't have an account? "}
-          <span style={s.switchLink} onClick={() => { setIsRegister(!isRegister); setError('') }}>
+          <span style={s.switchLink}
+            onClick={() => { setIsRegister(!isRegister); setError('') }}>
             {isRegister ? 'Sign in' : 'Register'}
           </span>
         </p>
@@ -59,17 +64,83 @@ const Login: React.FC = () => {
 }
 
 const s: Record<string, React.CSSProperties> = {
-  page: { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f0f0f' },
-  card: { background: '#161616', border: '1px solid #222', borderRadius: 14, padding: '44px 40px', width: '100%', maxWidth: 420 },
-  logo: { color: '#fff', fontSize: 26, fontWeight: 700, letterSpacing: '-0.5px' },
-  tagline: { color: '#555', fontSize: 13, margin: '6px 0 32px' },
-  heading: { color: '#e5e5e5', fontSize: 17, fontWeight: 500, marginBottom: 18 },
-  error: { background: '#1f1010', border: '1px solid #3f1515', color: '#f87171', borderRadius: 8, padding: '10px 14px', fontSize: 13, marginBottom: 14 },
+  page: {
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'var(--bg-page)',
+    position: 'relative',
+  },
+  topBar: {
+    position: 'absolute',
+    top: 20,
+    right: 24,
+  },
+  card: {
+    background: 'var(--bg-card)',
+    border: '1px solid var(--border)',
+    borderRadius: 14,
+    padding: '44px 40px',
+    width: '100%',
+    maxWidth: 420,
+    boxShadow: 'var(--shadow)',
+  },
+  logo: {
+    color: 'var(--text-primary)',
+    fontSize: 26,
+    fontWeight: 700,
+    letterSpacing: '-0.5px',
+  },
+  tagline: {
+    color: 'var(--text-secondary)',
+    fontSize: 13,
+    margin: '6px 0 32px',
+  },
+  heading: {
+    color: 'var(--text-primary)',
+    fontSize: 17,
+    fontWeight: 500,
+    marginBottom: 18,
+  },
+  error: {
+    background: 'var(--error-bg)',
+    border: '1px solid var(--error-border)',
+    color: 'var(--error-text)',
+    borderRadius: 8,
+    padding: '10px 14px',
+    fontSize: 13,
+    marginBottom: 14,
+  },
   form: { display: 'flex', flexDirection: 'column', gap: 11 },
-  input: { background: '#0f0f0f', border: '1px solid #2a2a2a', borderRadius: 8, padding: '11px 14px', color: '#e5e5e5', fontSize: 14, outline: 'none', transition: 'border-color .2s' },
-  btn: { background: '#7c3aed', color: '#fff', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 500, cursor: 'pointer', marginTop: 6 },
-  switchText: { color: '#555', fontSize: 13, textAlign: 'center', marginTop: 22 },
-  switchLink: { color: '#a78bfa', cursor: 'pointer' },
+  input: {
+    background: 'var(--bg-input)',
+    border: '1px solid var(--border)',
+    borderRadius: 8,
+    padding: '11px 14px',
+    color: 'var(--text-primary)',
+    fontSize: 14,
+    outline: 'none',
+  },
+  btn: {
+    background: 'var(--accent)',
+    color: 'var(--accent-text)',
+    border: 'none',
+    borderRadius: 8,
+    padding: '12px',
+    fontSize: 14,
+    fontWeight: 500,
+    cursor: 'pointer',
+    marginTop: 6,
+  },
+  switchText: {
+    color: 'var(--text-secondary)',
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 22,
+  },
+  switchLink: { color: 'var(--accent)', cursor: 'pointer' },
 }
 
 export default Login

@@ -6,20 +6,20 @@ interface ForensicPanelProps {
   avgPause: number
   isPasting: boolean
   isVisible: boolean
-  customScore: number 
+  customScore: number
 }
 
-const ForensicPanel: React.FC<ForensicPanelProps> = ({ 
-  wpm, 
-  pasteCount, 
-  avgPause, 
-  isVisible, 
-  customScore 
+const ForensicPanel: React.FC<ForensicPanelProps> = ({
+  wpm,
+  pasteCount,
+  avgPause,
+  isVisible,
+  customScore
 }) => {
   if (!isVisible) return null
 
-  const displayScore = Math.min(100, Math.max(0, customScore));
-  const scoreColor = displayScore > 80 ? '#4ade80' : displayScore > 50 ? '#fbbf24' : '#f87171';
+  const displayScore = Math.min(100, Math.max(0, customScore))
+  const scoreColor = displayScore > 80 ? '#4ade80' : displayScore > 50 ? '#fbbf24' : '#f87171'
 
   return (
     <div style={fp.container}>
@@ -37,7 +37,9 @@ const ForensicPanel: React.FC<ForensicPanelProps> = ({
 
       <div style={fp.section}>
         <span style={fp.subLabel}>PASTES</span>
-        <div style={{ ...fp.val, color: pasteCount > 0 ? '#f87171' : '#555' }}>{pasteCount}</div>
+        <div style={{ ...fp.val, color: pasteCount > 0 ? '#f87171' : 'var(--text-muted)' }}>
+          {pasteCount}
+        </div>
       </div>
 
       <div style={fp.section}>
@@ -49,22 +51,49 @@ const ForensicPanel: React.FC<ForensicPanelProps> = ({
 }
 
 const fp: Record<string, React.CSSProperties> = {
-  container: { 
-    width: 280, 
-    background: '#111', 
-    borderLeft: '1px solid #1a1a1a', 
-    padding: '30px', 
-    display: 'flex', 
-    flexDirection: 'column', 
+  container: {
+    width: 280,
+    background: 'var(--bg-card)',
+    borderLeft: '1px solid var(--border)',
+    padding: '30px',
+    display: 'flex',
+    flexDirection: 'column',
     gap: '35px',
-    fontFamily: 'Inter, system-ui, sans-serif'
+    fontFamily: 'Inter, system-ui, sans-serif',
+    transition: 'background 0.2s',
   },
-  label: { fontSize: '11px', color: '#555', fontWeight: 800, letterSpacing: '1.5px' },
-  section: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  subLabel: { fontSize: '9px', color: '#444', fontWeight: 700, letterSpacing: '0.5px' },
-  score: { fontSize: '42px', fontWeight: 900, letterSpacing: '-1px' },
-  status: { fontSize: '10px', fontWeight: 800, marginTop: '-5px' },
-  val: { fontSize: '22px', color: '#eee', fontWeight: 600 },
+  label: {
+    fontSize: '11px',
+    color: 'var(--text-muted)',
+    fontWeight: 800,
+    letterSpacing: '1.5px',
+  },
+  section: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  subLabel: {
+    fontSize: '9px',
+    color: 'var(--text-muted)',
+    fontWeight: 700,
+    letterSpacing: '0.5px',
+  },
+  score: {
+    fontSize: '42px',
+    fontWeight: 900,
+    letterSpacing: '-1px',
+  },
+  status: {
+    fontSize: '10px',
+    fontWeight: 800,
+    marginTop: '-5px',
+  },
+  val: {
+    fontSize: '22px',
+    color: 'var(--text-primary)',
+    fontWeight: 600,
+  },
 }
 
 export default ForensicPanel
